@@ -72,6 +72,7 @@ export function openDb() {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   migrate(db);
+  ensureDefaultSettings(db);
   seedIfEmpty(db);
   return db;
 }
@@ -127,12 +128,24 @@ function migrate(db) {
   `);
 }
 
+function ensureDefaultSettings(db) {
+  const exists = db.prepare('SELECT COUNT(*) AS count FROM settings').get().count > 0;
+  if (!exists) {
+    db.prepare(`
+      INSERT INTO settings (id, colorScheme, fontSize, compactMode, showCompleted, sidebarWidth, dark)
+      VALUES (1, @colorScheme, @fontSize, @compactMode, @showCompleted, @sidebarWidth, @dark)
+    `).run({
+      ...DEFAULT_SETTINGS,
+      compactMode: boolToInt(DEFAULT_SETTINGS.compactMode),
+      showCompleted: boolToInt(DEFAULT_SETTINGS.showCompleted),
+      dark: boolToInt(DEFAULT_SETTINGS.dark),
+    });
+  }
+}
+
 function seedIfEmpty(db) {
-  const hasSettings = db.prepare('SELECT COUNT(*) AS count FROM settings').get().count > 0;
-  const hasGroups = db.prepare('SELECT COUNT(*) AS count FROM groups').get().count > 0;
-  const hasLists = db.prepare('SELECT COUNT(*) AS count FROM lists').get().count > 0;
-  const hasTasks = db.prepare('SELECT COUNT(*) AS count FROM tasks').get().count > 0;
-  if (hasSettings || hasGroups || hasLists || hasTasks) return;
+  // Seeds disabled — clean slate
+  return;
 
   const insertSettings = db.prepare(`
     INSERT INTO settings (id, colorScheme, fontSize, compactMode, showCompleted, sidebarWidth, dark)
@@ -197,7 +210,8 @@ export function getBootstrap(db) {
   const subtasks = db.prepare('SELECT * FROM subtasks ORDER BY position, rowid').all().map(rowToSubtask);
   const byTaskId = new Map(tasks.map(task => [task.id, task]));
   subtasks.forEach(subtask => {
-    byTaskId.get(subtask.taskId)?.subtasks.push(({ taskId, ...rest }) => rest)(subtask);
+    const { taskId, ...rest } = subtask;
+    byTaskId.get(taskId)?.subtasks.push(rest);
   });
   return { settings: rowToSettings(settingsRow), groups, lists, tasks };
 }

@@ -121,7 +121,7 @@ export default function DetailPanel({ task, lists, scheme, fontSize, onClose, on
             </span>
           )}
           <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
-            {fmtDate(task.due)} {fmt(task.due)}
+            {task.due ? `${fmtDate(task.due)} ${fmt(task.due)}` : ''}
           </span>
         </div>
         <div style={{ display: 'flex', gap: 4 }}>
@@ -251,17 +251,17 @@ export default function DetailPanel({ task, lists, scheme, fontSize, onClose, on
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <input type="date"
-              value={`${task.due.getFullYear()}-${String(task.due.getMonth() + 1).padStart(2, '0')}-${String(task.due.getDate()).padStart(2, '0')}`}
+              value={task.due ? `${task.due.getFullYear()}-${String(task.due.getMonth() + 1).padStart(2, '0')}-${String(task.due.getDate()).padStart(2, '0')}` : ''}
               onChange={e => {
                 const [y, mo, day] = e.target.value.split('-').map(Number);
-                const d = new Date(task.due); d.setFullYear(y, mo - 1, day); onUpdate({ due: d });
+                const d = task.due ? new Date(task.due) : new Date(); d.setFullYear(y, mo - 1, day); onUpdate({ due: d });
               }}
               style={{ border: '1px solid var(--border)', borderRadius: 6, padding: '6px 10px', fontSize: fontSize - 1, color: accentText, background: 'var(--bg-hover)', outline: 'none', fontFamily: 'inherit' }} />
             <input type="time"
-              value={fmt(task.due)}
+              value={task.due ? fmt(task.due) : ''}
               onChange={e => {
                 const [h, m] = e.target.value.split(':').map(Number);
-                const d = new Date(task.due); d.setHours(h, m, 0, 0); onUpdate({ due: d });
+                const d = task.due ? new Date(task.due) : new Date(); d.setHours(h, m, 0, 0); onUpdate({ due: d });
               }}
               style={{ border: '1px solid var(--border)', borderRadius: 6, padding: '6px 10px', fontSize: fontSize - 1, color: accentText, background: 'var(--bg-hover)', outline: 'none', fontFamily: 'inherit' }} />
           </div>
