@@ -1,0 +1,82 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+body {
+  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg-app);
+  transition: background 0.25s;
+}
+
+/* Light mode defaults */
+:root {
+  --bg-app:      #f0f0f0;
+  --bg-sidebar:  #f7f7f7;
+  --bg-panel:    #ffffff;
+  --bg-hover:    #f5f5f5;
+  --bg-active:   #f0f0f0;
+  --bg-input:    #fafafa;
+  --border:      #e8e8e8;
+  --border-mid:  #f0f0f0;
+  --text-main:   #1a1a1a;
+  --text-sub:    #555555;
+  --text-muted:  #999999;
+  --text-faint:  #cccccc;
+  --text-nav:    #333333;
+  --scrollbar:   #dddddd;
+  --accent:      #2bab8e;
+  --accent-light: #e2f5f1;
+  --accent-text: #0d9276;
+  --font-size:   14px;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
+
+/* Task checkbox (round) */
+.task-checkbox {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  flex-shrink: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; background: transparent;
+}
+.task-checkbox:hover { border-color: var(--accent); }
+.task-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+.task-checkbox.checked::after {
+  content: '';
+  width: 8px; height: 5px;
+  border-left: 1.5px solid white;
+  border-bottom: 1.5px solid white;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+/* Date/time picker indicators */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0.4;
+  cursor: pointer;
+}
+[data-dark="1"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-dark="1"] input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+}
+
+/* Sub-task checkbox (square) */
+.sub-checkbox {
+  width: 14px; height: 14px; border-radius: 3px;
+  border: 1.5px solid var(--text-muted);
+  flex-shrink: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; background: transparent;
+}
+.sub-checkbox:hover { border-color: var(--accent); }
+.sub-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+.sub-checkbox.checked::after {
+  content: '';
+  width: 7px; height: 4px;
+  border-left: 1.5px solid white;
+  border-bottom: 1.5px solid white;
+  transform: rotate(-45deg) translateY(-1px);
+}
