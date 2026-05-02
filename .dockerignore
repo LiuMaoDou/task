@@ -1,0 +1,8 @@
+node_modules/
+dist/
+data/
+.git/
+.claude/
+.codex-*.log
+*design_files.txt
+npm-debug.log*

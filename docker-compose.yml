@@ -1,0 +1,16 @@
+services:
+  task:
+    build: .
+    container_name: task
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    environment:
+      NODE_ENV: production
+      PORT: 8003
+      DATA_DIR: /app/data
+    volumes:
+      - task-data:/app/data
+
+volumes:
+  task-data:

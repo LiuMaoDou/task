@@ -302,11 +302,11 @@ function GroupItem({
 // ── Sidebar root ──────────────────────────────────────────────
 export default function Sidebar({
   sidebarWidth, activeNav, scheme, tweaks, setTweak,
-  groups, setGroups,
-  lists, setLists,
-  tasks, setTasks,
+  groups, lists, tasks,
   searching, searchQuery, setSearchQuery, setSearching,
   setActiveNav, setSelectedTask,
+  addGroup, renameGroup, deleteGroup,
+  addList, updateList, deleteList,
 }) {
   const accent = scheme.accent;
   const accentLight = scheme.accentLight;
@@ -319,43 +319,30 @@ export default function Sidebar({
 
   // Task counts
   const taskCount = (lid) => tasks.filter(t => !t.done && t.listId === lid).length;
-  const todayCount  = tasks.filter(t => !t.done && isToday(t.due)).length;
-  const weekCount   = tasks.filter(t => !t.done && isThisWeek(t.due)).length;
-  const monthCount  = tasks.filter(t => !t.done && isThisMonth(t.due)).length;
-  const yearCount   = tasks.filter(t => !t.done && isThisYear(t.due)).length;
+  const todayCount  = tasks.filter(t => !t.done && t.due && isToday(t.due)).length;
+  const weekCount   = tasks.filter(t => !t.done && t.due && isThisWeek(t.due)).length;
+  const monthCount  = tasks.filter(t => !t.done && t.due && isThisMonth(t.due)).length;
+  const yearCount   = tasks.filter(t => !t.done && t.due && isThisYear(t.due)).length;
 
   const nav = (id) => { setActiveNav(id); setSelectedTask(null); setSearching(false); setSearchQuery(''); };
 
   // ── Group CRUD ──────────────────────────────────────────────
-  const addGroup = () => {
+  const handleAddGroup = () => {
     const name = '新分组';
     const newGroup = { id: uid(), name };
-    setGroups(gs => [...gs, newGroup]);
-  };
-
-  const renameGroup = (gid, name) => setGroups(gs => gs.map(g => g.id === gid ? { ...g, name } : g));
-
-  const deleteGroup = (gid) => {
-    // Move all lists in this group to no group (ungrouped), then delete group
-    setLists(ls => ls.map(l => l.groupId === gid ? { ...l, groupId: null } : l));
-    setGroups(gs => gs.filter(g => g.id !== gid));
+    addGroup(newGroup);
   };
 
   // ── List CRUD ───────────────────────────────────────────────
   const addListToGroup = (gid, name, icon) => {
     const colors = ['#4a90e2', '#e06b2d', '#2bab8e', '#7c5cbf', '#ec4899', '#f59e0b'];
     const newList = { id: uid(), name, icon, color: colors[lists.length % colors.length], groupId: gid };
-    setLists(ls => [...ls, newList]);
+    addList(newList);
     setActiveNav(newList.id);
   };
 
-  const renameList    = (lid, name)  => setLists(ls => ls.map(l => l.id === lid ? { ...l, name } : l));
-  const changeListIcon = (lid, icon) => setLists(ls => ls.map(l => l.id === lid ? { ...l, icon } : l));
-  const deleteList    = (lid) => {
-    setLists(ls => ls.filter(l => l.id !== lid));
-    setTasks(ts => ts.map(t => t.listId === lid ? { ...t, listId: 'inbox' } : t));
-    if (activeNav === lid) setActiveNav('today');
-  };
+  const renameList = (lid, name) => updateList(lid, { name });
+  const changeListIcon = (lid, icon) => updateList(lid, { icon });
 
   // Ungrouped lists (groupId === null)
   const ungroupedLists = lists.filter(l => !l.groupId);
@@ -463,7 +450,7 @@ export default function Sidebar({
 
         {/* Right: add group + settings (visual only) */}
         <div style={{ display: 'flex', gap: 4 }}>
-          <button title="添加分组" onClick={addGroup}
+          <button title="添加分组" onClick={handleAddGroup}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', padding: '4px 6px', borderRadius: 6, fontSize: 12, gap: 4 }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; e.currentTarget.style.color = accent; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--text-muted)'; }}>

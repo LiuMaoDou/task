@@ -25,7 +25,7 @@ function TaskRow({ task, height, selected, accent, selectionBg, fontSize, onTogg
   const [expanded, setExpanded] = useState(false);
   const list = lists.find(l => l.id === task.listId);
   const showList = activeNav === 'today' || activeNav === 'week' || activeNav === 'month';
-  const overdue = task.due < NOW && !isToday(task.due) && !task.done;
+  const overdue = task.due && task.due < NOW && !isToday(task.due) && !task.done;
   const hasSubs = task.subtasks.length > 0;
   const doneCount = task.subtasks.filter(s => s.done).length;
 
@@ -79,10 +79,10 @@ function TaskRow({ task, height, selected, accent, selectionBg, fontSize, onTogg
         )}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1, flexShrink: 0 }}>
           <span style={{ fontSize: fontSize - 2, color: overdue ? '#ef4444' : accent, fontVariantNumeric: 'tabular-nums' }}>
-            {fmt(task.due)}
+            {task.due ? fmt(task.due) : '--:--'}
           </span>
           <span style={{ fontSize: fontSize - 4, color: overdue ? '#ef4444' : '#bbb', fontVariantNumeric: 'tabular-nums' }}>
-            {fmtDate(task.due)}
+            {task.due ? fmtDate(task.due) : '无日期'}
           </span>
         </div>
       </div>
